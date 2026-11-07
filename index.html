@@ -426,6 +426,12 @@
             transform: scale(1.06) rotate(-2deg);
         }
 
+        .btn.wait {
+            background: none;
+            color: var(--pink);
+            border: 1.5px solid var(--pink);
+        }
+
         .btn:disabled {
             background: var(--line);
             color: var(--muted);
@@ -556,7 +562,7 @@
 
         .board {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-bottom: 90px;
         }
@@ -716,6 +722,12 @@
             to { transform: translateX(-50%); }
         }
 
+        @media (max-width: 1100px) {
+            .board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 850px) {
             .booking, .board {
                 grid-template-columns: 1fr;
@@ -829,6 +841,10 @@
                 <h3><b>Acceptées</b><span id="n-accepted">0</span></h3>
                 <div id="accepted"></div>
             </div>
+            <div class="col" style="--dot: var(--violet)">
+                <h3><b>Liste d'attente</b><span id="n-waitlisted">0</span></h3>
+                <div id="waitlisted"></div>
+            </div>
             <div class="col" style="--dot: var(--pink)">
                 <h3><b>Refusées</b><span id="n-rejected">0</span></h3>
                 <div id="rejected"></div>
@@ -912,8 +928,8 @@
                     <div class="cut"></div>
                     <div class="seats">${seats}</div>
                     <div class="pass-foot">
-                        <span>${e.available_places} / ${e.capacity} places dispo</span>
-                        <button class="btn" onclick="choose(${e.id})" ${full ? "disabled" : ""}>${full ? "Complet" : "Réserver"}</button>
+                        <span>${e.available_places} / ${e.capacity} places dispo${e.waitlist ? "<br>" + e.waitlist + " en attente" : ""}</span>
+                        <button class="btn ${full ? "wait" : ""}" onclick="choose(${e.id})">${full ? "Liste d'attente" : "Réserver"}</button>
                     </div>
                 </div>
             `;
@@ -967,7 +983,9 @@
     }
 
     function showBoard() {
-        ["pending", "accepted", "rejected"].forEach(status => {
+        const colors = { pending: "--orange", accepted: "--lime", waitlisted: "--violet", rejected: "--pink" };
+
+        ["pending", "accepted", "waitlisted", "rejected"].forEach(status => {
             const div = document.getElementById(status);
             const list = registrations.filter(r => r.status == status);
             document.getElementById("n-" + status).textContent = list.length;
@@ -983,7 +1001,7 @@
                 const event = events.find(e => e.id == r.event_id);
 
                 let buttons = "";
-                if (status == "pending") {
+                if (status == "pending" || status == "waitlisted") {
                     buttons = `
                         <button class="yes" onclick="changeStatus(${r.id}, 'accepted')">Accepter</button>
                         <button class="no" onclick="changeStatus(${r.id}, 'rejected')">Refuser</button>`;
@@ -992,7 +1010,7 @@
                 }
 
                 div.innerHTML += `
-                    <div class="req" style="--dot: var(${status == "pending" ? "--orange" : status == "accepted" ? "--lime" : "--pink"})">
+                    <div class="req" style="--dot: var(${colors[status]})">
                         <small>DEMANDE #${r.id}</small>
                         <b>${student ? student.name : "Étudiant inconnu"}</b>
                         <p>${event ? event.title : "Événement inconnu"}</p>
@@ -1045,7 +1063,7 @@
         ticket.innerHTML = `
             <div class="ticket-head">
                 <span>TICKET #${String(registration.id).padStart(4, "0")}</span>
-                <span>EN ATTENTE</span>
+                <span>${registration.status == "waitlisted" ? "LISTE D'ATTENTE" : "EN ATTENTE"}</span>
             </div>
             <h4>${event.title}</h4>
             <p>${student.name} · ${event.date} · ${event.location}</p>
@@ -1065,9 +1083,11 @@
             });
             const body = await res.json();
             if (res.ok) {
-                const words = { pending: "remise en attente", accepted: "acceptée", rejected: "refusée" };
+                const words = { pending: "remise en attente", accepted: "acceptée", rejected: "refusée", waitlisted: "mise en liste d'attente" };
                 showToast("Demande #" + id + " " + words[status]);
                 loadData();
+            } else if (res.status == 409) {
+                showToast("Impossible : l'événement est complet.", true);
             } else {
                 showToast("Erreur " + res.status + " : " + body.error, true);
             }
@@ -1093,11 +1113,15 @@
             const body = await res.json();
 
             if (res.ok) {
-                showToast("C'est envoyé ! Voilà ton ticket ✦");
+                if (body.registration.status == "waitlisted") {
+                    showToast("C'est complet, tu es sur la liste d'attente ✦");
+                } else {
+                    showToast("C'est envoyé ! Voilà ton ticket ✦");
+                }
                 showTicket(body.registration);
                 loadData();
             } else if (res.status == 409) {
-                showToast(body.error == "Event is full" ? "Trop tard, c'est complet." : "Tu es déjà inscrit(e) à cet événement.", true);
+                showToast("Tu es déjà inscrit(e) à cet événement.", true);
             } else if (res.status == 404) {
                 showToast("Étudiant ou événement introuvable.", true);
             } else {
