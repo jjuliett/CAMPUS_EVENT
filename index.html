@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Event</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d0b1a;
+            --card: #17142b;
+            --line: #2c2747;
+            --text: #f3eee4;
+            --muted: #8f88a8;
+            --lime: #c6ff3d;
+            --pink: #ff5fa2;
+            --violet: #7b5cff;
+            --orange: #ff8a3d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Bricolage Grotesque", Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(123, 92, 255, 0.35), transparent 40%),
+                radial-gradient(circle at 90% 30%, rgba(255, 95, 162, 0.25), transparent 35%),
+                radial-gradient(circle at 50% 100%, rgba(198, 255, 61, 0.12), transparent 40%);
+            z-index: -1;
+        }
+
+        .wrap {
+            max-width: 1150px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            gap: 12px;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--lime);
+            margin-left: 4px;
+            box-shadow: 0 0 12px var(--lime);
+            animation: blink 1.6s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        .switch {
+            display: flex;
+            border: 1px solid var(--line);
+            border-radius: 40px;
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .switch button {
+            background: none;
+            border: none;
+            color: var(--muted);
+            padding: 9px 18px;
+            border-radius: 40px;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .switch button.active {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .hero {
+            position: relative;
+            padding: 50px 0 40px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(60px, 13vw, 170px);
+            line-height: 0.85;
+            font-weight: 800;
+            letter-spacing: -4px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 .outline {
+            color: transparent;
+            -webkit-text-stroke: 2px var(--text);
+        }
+
+        .hero h1 .serif {
+            font-family: "Instrument Serif", serif;
+            font-style: italic;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, var(--lime), var(--pink), var(--violet));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .hero-bottom p {
+            max-width: 380px;
+            color: var(--muted);
+            font-size: 17px;
+            margin: 0;
+        }
+
+        .countdown {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 16px 20px;
+            background: rgba(23, 20, 43, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        .countdown small {
+            color: var(--muted);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .countdown b {
+            display: block;
+            font-size: 20px;
+            margin: 4px 0 8px;
+        }
+
+        .digits {
+            display: flex;
+            gap: 10px;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .digits div {
+            text-align: center;
+        }
+
+        .digits span {
+            display: block;
+            background: var(--bg);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--lime);
+        }
+
+        .digits em {
+            font-style: normal;
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        .badge-round {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            width: 140px;
+            height: 140px;
+            animation: turn 14s linear infinite;
+        }
+
+        .badge-round text {
+            fill: var(--lime);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11.5px;
+            letter-spacing: 3px;
+        }
+
+        @keyframes turn {
+            to { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            margin: 30px 0 70px;
+        }
+
+        .stat {
+            padding: 22px 10px;
+            border-right: 1px solid var(--line);
+        }
+
+        .stat:last-child {
+            border-right: none;
+        }
+
+        .stat b {
+            display: block;
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 800;
+        }
+
+        .stat small {
+            color: var(--muted);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .title {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+
+        .title h2 {
+            margin: 0;
+            font-size: clamp(34px, 5vw, 54px);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+        }
+
+        .title h2 i {
+            font-family: "Instrument Serif", serif;
+            font-weight: 400;
+            color: var(--pink);
+        }
+
+        .title span {
+            font-family: "JetBrains Mono", monospace;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .passes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 26px;
+            margin-bottom: 90px;
+            perspective: 1000px;
+        }
+
+        .pass {
+            position: relative;
+            border-radius: 22px;
+            padding: 22px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            overflow: hidden;
+            transition: transform 0.15s;
+            transform-style: preserve-3d;
+        }
+
+        .pass::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 30%, rgba(198, 255, 61, 0.18), rgba(255, 95, 162, 0.18), rgba(123, 92, 255, 0.18), transparent 70%);
+            background-size: 250% 250%;
+            background-position: var(--x, 100%) 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .pass:hover::before {
+            opacity: 1;
+        }
+
+        .pass-top {
+            display: flex;
+            justify-content: space-between;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .pass-day {
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1;
+            margin: 18px 0 0;
+            letter-spacing: -3px;
+        }
+
+        .pass-day small {
+            font-family: "Instrument Serif", serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: 30px;
+            letter-spacing: 0;
+            color: var(--pink);
+            margin-left: 6px;
+        }
+
+        .pass h3 {
+            font-size: 24px;
+            margin: 10px 0 4px;
+            line-height: 1.1;
+        }
+
+        .pass .where {
+            color: var(--muted);
+            margin: 0 0 20px;
+        }
+
+        .cut {
+            border-top: 2px dashed var(--line);
+            margin: 0 -22px 18px;
+            position: relative;
+        }
+
+        .cut::before,
+        .cut::after {
+            content: "";
+            position: absolute;
+            top: -12px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--line);
+        }
+
+        .cut::before {
+            left: -12px;
+        }
+
+        .cut::after {
+            right: -12px;
+        }
+
+        .seats {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 10px;
+        }
+
+        .seats i {
+            flex: 1;
+            height: 18px;
+            border-radius: 3px;
+            background: var(--line);
+        }
+
+        .seats i.on {
+            background: var(--lime);
+        }
+
+        .pass.hot .seats i.on {
+            background: var(--orange);
+        }
+
+        .pass.full .seats i.on {
+            background: var(--pink);
+        }
+
+        .pass-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pass-foot span {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 13px;
+        }
+
+        .btn {
+            background: var(--lime);
+            color: var(--bg);
+            border: none;
+            padding: 11px 18px;
+            border-radius: 40px;
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .btn:hover {
+            transform: scale(1.06) rotate(-2deg);
+        }
+
+        .btn:disabled {
+            background: var(--line);
+            color: var(--muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sold-out {
+            position: absolute;
+            top: 70px;
+            right: -38px;
+            transform: rotate(35deg);
+            background: var(--pink);
+            color: var(--bg);
+            font-weight: 800;
+            padding: 6px 50px;
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        .booking {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: 30px;
+            padding: 40px;
+            margin-bottom: 90px;
+            background: linear-gradient(135deg, rgba(123, 92, 255, 0.15), rgba(23, 20, 43, 0.8));
+        }
+
+        .booking h2 {
+            font-size: clamp(36px, 5vw, 58px);
+            line-height: 0.95;
+            margin: 0 0 14px;
+            letter-spacing: -1.5px;
+        }
+
+        .booking h2 i {
+            font-family: "Instrument Serif", serif;
+            font-weight: 400;
+            color: var(--lime);
+        }
+
+        .booking p {
+            color: var(--muted);
+        }
+
+        .step {
+            margin-bottom: 18px;
+        }
+
+        .step label {
+            display: block;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .step select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--line);
+            font: inherit;
+            font-size: 16px;
+        }
+
+        .step select:focus {
+            outline: 2px solid var(--lime);
+        }
+
+        .booking .btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+        }
+
+        .ticket {
+            display: none;
+            margin-top: 22px;
+            background: var(--text);
+            color: var(--bg);
+            border-radius: 16px;
+            padding: 18px;
+            animation: print 0.7s ease-out;
+        }
+
+        .ticket.show {
+            display: block;
+        }
+
+        @keyframes print {
+            from { clip-path: inset(0 0 100% 0); transform: translateY(-20px); }
+            to { clip-path: inset(0 0 0 0); transform: translateY(0); }
+        }
+
+        .ticket-head {
+            display: flex;
+            justify-content: space-between;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 12px;
+        }
+
+        .ticket h4 {
+            font-size: 22px;
+            margin: 10px 0 2px;
+        }
+
+        .ticket p {
+            color: #555;
+            margin: 0 0 12px;
+        }
+
+        .barcode {
+            display: flex;
+            height: 46px;
+            gap: 2px;
+        }
+
+        .barcode i {
+            background: var(--bg);
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 90px;
+        }
+
+        .col {
+            background: rgba(23, 20, 43, 0.7);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            padding: 16px;
+            min-height: 300px;
+        }
+
+        .col h3 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0 14px;
+            font-size: 17px;
+        }
+
+        .col h3 span {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 13px;
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 3px 10px;
+        }
+
+        .col h3::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: var(--dot);
+        }
+
+        .col h3 b {
+            flex: 1;
+        }
+
+        .req {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--dot);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            animation: pop 0.3s;
+        }
+
+        @keyframes pop {
+            from { transform: scale(0.95); opacity: 0; }
+        }
+
+        .req small {
+            font-family: "JetBrains Mono", monospace;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .req b {
+            display: block;
+            margin: 4px 0 2px;
+        }
+
+        .req p {
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .req-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .req-actions button {
+            flex: 1;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--text);
+            border-radius: 10px;
+            padding: 7px;
+            font: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .req-actions .yes:hover {
+            background: var(--lime);
+            color: var(--bg);
+        }
+
+        .req-actions .no:hover {
+            background: var(--pink);
+            color: var(--bg);
+        }
+
+        .req-actions .back:hover {
+            background: var(--orange);
+            color: var(--bg);
+        }
+
+        .empty {
+            color: var(--muted);
+            text-align: center;
+            padding: 30px 10px;
+            border: 1px dashed var(--line);
+            border-radius: 14px;
+            font-size: 14px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--text);
+            color: var(--bg);
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-weight: 600;
+            transform: translateY(150px);
+            transition: transform 0.35s cubic-bezier(.2, 1.4, .4, 1);
+            max-width: calc(100% - 48px);
+            z-index: 10;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background: var(--pink);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            overflow: hidden;
+            padding: 30px 0;
+        }
+
+        footer div {
+            white-space: nowrap;
+            font-size: clamp(40px, 8vw, 90px);
+            font-weight: 800;
+            animation: slide 30s linear infinite;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--line);
+        }
+
+        @keyframes slide {
+            to { transform: translateX(-50%); }
+        }
+
+        @media (max-width: 850px) {
+            .booking, .board {
+                grid-template-columns: 1fr;
+            }
+
+            .booking {
+                padding: 24px;
+            }
+
+            .badge-round {
+                width: 90px;
+                height: 90px;
+                top: 0;
+            }
+
+            .hero h1 {
+                letter-spacing: -2px;
+            }
+
+            .stat {
+                padding: 16px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+    <nav>
+        <div class="logo">campus event<span></span></div>
+        <div class="switch">
+            <button class="active" data-view="student">Étudiant</button>
+            <button data-view="admin">Admin</button>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <svg class="badge-round" viewBox="0 0 140 140">
+            <defs>
+                <path id="circle" d="M70,70 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/>
+            </defs>
+            <text><textPath href="#circle">RÉSERVE TA PLACE ✦ RÉSERVE TA PLACE ✦ </textPath></text>
+        </svg>
+
+        <h1>
+            Campus<br>
+            <span class="outline">Event</span> <span class="serif">live</span>
+        </h1>
+
+        <div class="hero-bottom">
+            <p>Conférences, ateliers, forums entreprises, soirées associatives. Tout ce qui se passe à la fac, au même endroit.</p>
+            <div class="countdown">
+                <small>Prochain événement</small>
+                <b id="next-title">...</b>
+                <div class="digits">
+                    <div><span id="d">00</span><em>jours</em></div>
+                    <div><span id="h">00</span><em>heures</em></div>
+                    <div><span id="m">00</span><em>min</em></div>
+                    <div><span id="s">00</span><em>sec</em></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="stats">
+        <div class="stat"><b id="nb-events">0</b><small>événements</small></div>
+        <div class="stat"><b id="nb-regs">0</b><small>inscriptions</small></div>
+        <div class="stat"><b id="rate">0%</b><small>remplissage</small></div>
+    </div>
+
+    <div id="student-view">
+        <div class="title">
+            <h2>À <i>l'affiche</i></h2>
+            <span id="count-events"></span>
+        </div>
+        <div class="passes" id="events"></div>
+
+        <section class="booking" id="booking">
+            <div>
+                <h2>Prends ton <i>pass</i>.</h2>
+                <p>Choisis ton nom et l'événement, ta demande part directement à l'administration. Tu reçois ton ticket tout de suite, avec le statut « en attente ».</p>
+            </div>
+            <div>
+                <form id="form">
+                    <div class="step">
+                        <label for="student">01 — Qui es-tu ?</label>
+                        <select id="student"></select>
+                    </div>
+                    <div class="step">
+                        <label for="event">02 — Tu veux aller où ?</label>
+                        <select id="event"></select>
+                    </div>
+                    <button type="submit" class="btn">Je réserve ✦</button>
+                </form>
+                <div class="ticket" id="ticket"></div>
+            </div>
+        </section>
+    </div>
+
+    <div id="admin-view" class="hidden">
+        <div class="title">
+            <h2>Les <i>demandes</i></h2>
+            <span>accepter ou refuser</span>
+        </div>
+        <div class="board">
+            <div class="col" style="--dot: var(--orange)">
+                <h3><b>En attente</b><span id="n-pending">0</span></h3>
+                <div id="pending"></div>
+            </div>
+            <div class="col" style="--dot: var(--lime)">
+                <h3><b>Acceptées</b><span id="n-accepted">0</span></h3>
+                <div id="accepted"></div>
+            </div>
+            <div class="col" style="--dot: var(--pink)">
+                <h3><b>Refusées</b><span id="n-rejected">0</span></h3>
+                <div id="rejected"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>ATELIERS ✦ CONFÉRENCES ✦ FORUMS ✦ PORTES OUVERTES ✦ ASSOS ✦ ATELIERS ✦ CONFÉRENCES ✦ FORUMS ✦ PORTES OUVERTES ✦ ASSOS ✦&nbsp;</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const API = "http://127.0.0.1:5000";
+
+    let events = [];
+    let students = [];
+    let registrations = [];
+    let nextEvent = null;
+
+    const months = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+
+    function showToast(text, isError) {
+        const toast = document.getElementById("toast");
+        toast.textContent = text;
+        toast.className = isError ? "toast show error" : "toast show";
+        setTimeout(() => toast.className = "toast", 3200);
+    }
+
+    async function loadData() {
+        try {
+            const res1 = await fetch(API + "/events");
+            const res2 = await fetch(API + "/students");
+            const res3 = await fetch(API + "/registrations");
+            events = (await res1.json()).events;
+            students = (await res2.json()).students;
+            registrations = (await res3.json()).registrations;
+            showEvents();
+            showSelects();
+            showStats();
+            showBoard();
+            findNextEvent();
+        } catch (err) {
+            document.getElementById("events").innerHTML =
+                '<p class="empty">Impossible de charger les événements. Vérifie que le serveur Flask est lancé.</p>';
+        }
+    }
+
+    function showEvents() {
+        const div = document.getElementById("events");
+        div.innerHTML = "";
+        document.getElementById("count-events").textContent = "(" + events.length + ")";
+
+        events.forEach((e, i) => {
+            const taken = e.capacity - e.available_places;
+            const percent = taken / e.capacity * 100;
+            const date = new Date(e.date);
+            const full = e.available_places == 0;
+
+            let type = "";
+            if (full) type = "full";
+            else if (percent >= 70) type = "hot";
+
+            let seats = "";
+            for (let k = 0; k < 20; k++) {
+                seats += k < Math.round(percent / 5) ? '<i class="on"></i>' : "<i></i>";
+            }
+
+            div.innerHTML += `
+                <div class="pass ${type}">
+                    ${full ? '<div class="sold-out">COMPLET</div>' : ""}
+                    <div class="pass-top">
+                        <span>N°${String(i + 1).padStart(3, "0")}</span>
+                        <span>${date.getFullYear()}</span>
+                    </div>
+                    <p class="pass-day">${date.getDate()}<small>${months[date.getMonth()]}</small></p>
+                    <h3>${e.title}</h3>
+                    <p class="where">↳ ${e.location}</p>
+                    <div class="cut"></div>
+                    <div class="seats">${seats}</div>
+                    <div class="pass-foot">
+                        <span>${e.available_places} / ${e.capacity} places dispo</span>
+                        <button class="btn" onclick="choose(${e.id})" ${full ? "disabled" : ""}>${full ? "Complet" : "Réserver"}</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.querySelectorAll(".pass").forEach(card => {
+            card.addEventListener("mousemove", ev => {
+                const box = card.getBoundingClientRect();
+                const x = (ev.clientX - box.left) / box.width;
+                const y = (ev.clientY - box.top) / box.height;
+                card.style.transform = `rotateY(${(x - 0.5) * 14}deg) rotateX(${(0.5 - y) * 14}deg)`;
+                card.style.setProperty("--x", x * 100 + "%");
+            });
+            card.addEventListener("mouseleave", () => {
+                card.style.transform = "";
+            });
+        });
+    }
+
+    function showSelects() {
+        const studentSelect = document.getElementById("student");
+        const eventSelect = document.getElementById("event");
+        const chosenStudent = studentSelect.value;
+        const chosenEvent = eventSelect.value;
+
+        studentSelect.innerHTML = "";
+        students.forEach(s => {
+            studentSelect.innerHTML += `<option value="${s.id}">${s.name} · ${s.filiere}</option>`;
+        });
+
+        eventSelect.innerHTML = "";
+        events.forEach(e => {
+            eventSelect.innerHTML += `<option value="${e.id}">${e.title}</option>`;
+        });
+
+        if (chosenStudent) studentSelect.value = chosenStudent;
+        if (chosenEvent) eventSelect.value = chosenEvent;
+    }
+
+    function showStats() {
+        let capacity = 0;
+        let taken = 0;
+        events.forEach(e => {
+            capacity += e.capacity;
+            taken += e.capacity - e.available_places;
+        });
+
+        document.getElementById("nb-events").textContent = events.length;
+        document.getElementById("nb-regs").textContent = registrations.length;
+        document.getElementById("rate").textContent = capacity ? Math.round(taken / capacity * 100) + "%" : "0%";
+    }
+
+    function showBoard() {
+        ["pending", "accepted", "rejected"].forEach(status => {
+            const div = document.getElementById(status);
+            const list = registrations.filter(r => r.status == status);
+            document.getElementById("n-" + status).textContent = list.length;
+
+            if (list.length == 0) {
+                div.innerHTML = '<p class="empty">Rien ici pour le moment</p>';
+                return;
+            }
+
+            div.innerHTML = "";
+            list.forEach(r => {
+                const student = students.find(s => s.id == r.student_id);
+                const event = events.find(e => e.id == r.event_id);
+
+                let buttons = "";
+                if (status == "pending") {
+                    buttons = `
+                        <button class="yes" onclick="changeStatus(${r.id}, 'accepted')">Accepter</button>
+                        <button class="no" onclick="changeStatus(${r.id}, 'rejected')">Refuser</button>`;
+                } else {
+                    buttons = `<button class="back" onclick="changeStatus(${r.id}, 'pending')">Remettre en attente</button>`;
+                }
+
+                div.innerHTML += `
+                    <div class="req" style="--dot: var(${status == "pending" ? "--orange" : status == "accepted" ? "--lime" : "--pink"})">
+                        <small>DEMANDE #${r.id}</small>
+                        <b>${student ? student.name : "Étudiant inconnu"}</b>
+                        <p>${event ? event.title : "Événement inconnu"}</p>
+                        <div class="req-actions">${buttons}</div>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function findNextEvent() {
+        const now = new Date();
+        const future = events
+            .map(e => ({ title: e.title, date: new Date(e.date + "T09:00:00") }))
+            .filter(e => e.date > now)
+            .sort((a, b) => a.date - b.date);
+
+        nextEvent = future[0] || null;
+        document.getElementById("next-title").textContent = nextEvent ? nextEvent.title : "Aucun pour l'instant";
+    }
+
+    function tick() {
+        if (!nextEvent) return;
+        let diff = Math.max(0, Math.floor((nextEvent.date - new Date()) / 1000));
+        const d = Math.floor(diff / 86400);
+        const h = Math.floor(diff % 86400 / 3600);
+        const m = Math.floor(diff % 3600 / 60);
+        const s = diff % 60;
+        document.getElementById("d").textContent = String(d).padStart(2, "0");
+        document.getElementById("h").textContent = String(h).padStart(2, "0");
+        document.getElementById("m").textContent = String(m).padStart(2, "0");
+        document.getElementById("s").textContent = String(s).padStart(2, "0");
+    }
+
+    function choose(id) {
+        document.getElementById("event").value = id;
+        document.getElementById("booking").scrollIntoView();
+    }
+
+    function showTicket(registration) {
+        const student = students.find(s => s.id == registration.student_id);
+        const event = events.find(e => e.id == registration.event_id);
+        const ticket = document.getElementById("ticket");
+
+        let bars = "";
+        for (let i = 0; i < 45; i++) {
+            bars += `<i style="width: ${1 + Math.floor(Math.random() * 4)}px"></i>`;
+        }
+
+        ticket.innerHTML = `
+            <div class="ticket-head">
+                <span>TICKET #${String(registration.id).padStart(4, "0")}</span>
+                <span>EN ATTENTE</span>
+            </div>
+            <h4>${event.title}</h4>
+            <p>${student.name} · ${event.date} · ${event.location}</p>
+            <div class="barcode">${bars}</div>
+        `;
+        ticket.classList.remove("show");
+        void ticket.offsetWidth;
+        ticket.classList.add("show");
+    }
+
+    async function changeStatus(id, status) {
+        try {
+            const res = await fetch(API + "/registrations/" + id, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: status })
+            });
+            const body = await res.json();
+            if (res.ok) {
+                const words = { pending: "remise en attente", accepted: "acceptée", rejected: "refusée" };
+                showToast("Demande #" + id + " " + words[status]);
+                loadData();
+            } else {
+                showToast("Erreur " + res.status + " : " + body.error, true);
+            }
+        } catch (err) {
+            showToast("Le serveur ne répond pas.", true);
+        }
+    }
+
+    document.getElementById("form").addEventListener("submit", async e => {
+        e.preventDefault();
+
+        const data = {
+            student_id: Number(document.getElementById("student").value),
+            event_id: Number(document.getElementById("event").value)
+        };
+
+        try {
+            const res = await fetch(API + "/registrations", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            const body = await res.json();
+
+            if (res.ok) {
+                showToast("C'est envoyé ! Voilà ton ticket ✦");
+                showTicket(body.registration);
+                loadData();
+            } else if (res.status == 409) {
+                showToast(body.error == "Event is full" ? "Trop tard, c'est complet." : "Tu es déjà inscrit(e) à cet événement.", true);
+            } else if (res.status == 404) {
+                showToast("Étudiant ou événement introuvable.", true);
+            } else {
+                showToast("Erreur " + res.status + " : " + body.error, true);
+            }
+        } catch (err) {
+            showToast("Le serveur ne répond pas.", true);
+        }
+    });
+
+    document.querySelectorAll(".switch button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".switch button").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            const admin = btn.dataset.view == "admin";
+            document.getElementById("admin-view").classList.toggle("hidden", !admin);
+            document.getElementById("student-view").classList.toggle("hidden", admin);
+        });
+    });
+
+    loadData();
+    setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
